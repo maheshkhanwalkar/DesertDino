@@ -1,0 +1,6 @@
+# Ignore
+*.elf
+*.gba
+*.o
+*.pdf
+*.log
