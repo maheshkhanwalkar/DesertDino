@@ -24,14 +24,18 @@ int main(void)
     image_t dino = img_Create(SCREEN_HEIGHT - DINOSAUR_HEIGHT, 0, DINOSAUR_HEIGHT, DINOSAUR_WIDTH, dinosaur);
     image_t grd = img_Create(SCREEN_HEIGHT - GROUND_HEIGHT, 0, GROUND_HEIGHT, GROUND_WIDTH, ground);
 
-    /* Draw the images */
     img_Draw(bg);
     img_Draw(dino);
     img_Draw(grd);
 
-    img_Clear(dino, bg);
-    img_Clear(grd, bg);
+    while(1) 
+    {
+        /* Draw the images */
+        waitForVBlank();
 
+        delay(10);
+        img_Ticker(grd, -10);
+    }
 
     /* Draw the images */
     /*img_Draw(bg);

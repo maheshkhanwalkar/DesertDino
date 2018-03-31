@@ -13,7 +13,7 @@ struct image
     int height;
     int width;
 
-    const unsigned short* data;
+    unsigned short* data;
 };
 
 /* Compute address */
@@ -25,22 +25,21 @@ static inline void* addr(const void* base, int e_size, int row, int col, int c_c
 image_t img_Create(int row, int col, int height, int width, const unsigned short* data)
 {
     image_t img = malloc(sizeof(struct image));
+    
+    unsigned short* copy = (unsigned short*)malloc(sizeof(unsigned short) * height * width);
+    memcpy(copy, data, sizeof(unsigned short) * height * width);
 
     img->row = row;
     img->col = col;
     img->height = height;
     img->width = width;
-    img->data = data;
+    img->data = copy;
 
     return img;
 }
 
 void img_Draw(image_t img)
 {
-    if(!img)
-        return;
-
-    /* Actually draw the image */
     draw_img(img->row, img->col, img->height, img->width, img->data);
 }
 
@@ -69,12 +68,55 @@ void img_Clear(image_t img, image_t bg)
     img_Destroy(clr);
 }
 
+void img_Ticker(image_t img, int amt)
+{
+    /* no-op */
+    if(amt == 0)
+        return;
+    
+    /* Normalize amt */
+    amt %= img->width;
+
+    unsigned short* copy = malloc(sizeof(unsigned short) * img->height * img->width);
+
+    for(int i = 0; i < img->height; i++)
+    {
+        int blocks = amt > 0 ? amt : -amt;
+
+        int s1_pos = amt > 0 ? 0 : blocks;
+        int d1_pos = amt > 0 ? blocks : 0;
+
+        void* src = addr(img->data, sizeof(unsigned short), i, s1_pos, img->width);
+        void* dest = addr(copy, sizeof(unsigned short), i, d1_pos, img->width);
+        memcpy(dest, src, (img->width - blocks) * sizeof(unsigned short));
+
+        int s2_pos = amt > 0 ? img->width - blocks : 0;
+        int d2_pos = amt > 0 ? 0 : img->width - blocks;
+
+        src = addr(img->data, sizeof(unsigned short), i, s2_pos, img->width);
+        dest = addr(copy, sizeof(unsigned short), i, d2_pos, img->width);
+
+        memcpy(dest, src, blocks * sizeof(unsigned short));
+    }
+
+    memcpy(img->data, copy, sizeof(unsigned short) * img->height * img->width);
+    free(copy);
+    
+    img_Draw(img);
+    //image_t n_img = img_Create(img->row, img->col, img->height, img->width, copy);
+    //img_Draw(n_img);
+    
+    //*img = *n_img;
+    //memcpy(img->data, copy, sizeof(unsigned short) * img->height * img->width);
+    //draw_img(img->row, img->col, img->height, img->width, copy);
+
+    //free(copy);
+    //img_Draw(img);
+}
+
 void img_Destroy(image_t img)
 {
-    /* Invalid ptr */
-    if(!img)
-        return;
-
+    free(img->data);
     free(img);
 }
 
