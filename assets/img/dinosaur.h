@@ -1,7 +1,7 @@
 /*
  * Exported with nin10kit v1.7
  * Invocation command was nin10kit --mode=3 dinosaur dinosaur.bmp 
- * Time-stamp: Friday 03/30/2018, 18:01:17
+ * Time-stamp: Saturday 03/31/2018, 12:24:47
  * 
  * Image Information
  * -----------------

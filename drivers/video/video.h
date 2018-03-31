@@ -42,6 +42,10 @@ void draw_pixel(int row, int col, int color);
  */
 void waitForVBlank(void);
 
-
-void draw_img(int row, int col, int rdim, int cdim, const unsigned short* img_data);
+/**
+ * Draw an image at (row, col) with dimensions (rdim, cdim) 
+ * located in the buffer img_data. Currently does not support DMA.
+ */
+void draw_img(int row, int col, int rdim, int cdim, 
+        const unsigned short* img_data);
 
