@@ -103,15 +103,6 @@ void img_Ticker(image_t img, int amt)
     free(copy);
     
     img_Draw(img);
-    //image_t n_img = img_Create(img->row, img->col, img->height, img->width, copy);
-    //img_Draw(n_img);
-    
-    //*img = *n_img;
-    //memcpy(img->data, copy, sizeof(unsigned short) * img->height * img->width);
-    //draw_img(img->row, img->col, img->height, img->width, copy);
-
-    //free(copy);
-    //img_Draw(img);
 }
 
 void img_Destroy(image_t img)

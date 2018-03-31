@@ -1,7 +1,7 @@
 /*
  * Exported with nin10kit v1.7
  * Invocation command was nin10kit --mode=3 bg_main bg_main.bmp 
- * Time-stamp: Saturday 03/31/2018, 13:34:51
+ * Time-stamp: Saturday 03/31/2018, 19:04:17
  * 
  * Image Information
  * -----------------
