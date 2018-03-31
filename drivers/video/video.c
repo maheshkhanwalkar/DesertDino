@@ -27,7 +27,8 @@ void init_mode3(void)
 void draw_pixel(int row, int col, int color)
 {
     /* Out of bounds */
-    if(row > NUM_ROWS || col > NUM_COLS) {
+    if(row > NUM_ROWS || col > NUM_COLS) 
+    {
         return;
     }
 

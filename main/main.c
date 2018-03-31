@@ -7,6 +7,14 @@
 #include "../assets/img/ground.h"
 #include "../myLib.h"
 
+void delay(int n)
+{
+    volatile int x = 0;
+
+    for(int i = 0; i < n * 8000; i++)
+        x++;
+}
+
 int main(void)
 {
     init_mode3();
@@ -21,10 +29,19 @@ int main(void)
     img_Draw(dino);
     img_Draw(grd);
 
+    img_Clear(dino, bg);
+    img_Clear(grd, bg);
+
+
+    /* Draw the images */
+    /*img_Draw(bg);
+    img_Draw(dino);
+    img_Draw(grd);*/
+
     /* Destroy the images */
-    img_Destroy(bg);
+    /*img_Destroy(bg);
     img_Destroy(dino);
-    img_Destroy(grd);
+    img_Destroy(grd);*/
 
     while(1);
 }
