@@ -1,20 +1,17 @@
 /* main.c: entry point of the game */
 
-#include "../drivers/video/prim.h"
+#include "../drivers/video/video.h"
+#include "../assets/img/dinosaur.h"
+#include "../myLib.h"
 
-#define REG_DISPCTL *(unsigned short *)0x4000000
-#define MODE3 3
-#define BG2_ENABLE (1<<10)
-
-unsigned short *videoBuffer = (unsigned short *)0x6000000;
-
-int main() {
-    int row = 10;
-    int col = 10;
-    
+int main(void)
+{
     init_mode3();
-    draw_pixel(row, col, BLUE /*0x7fff*/);
     
+    int r_pos = SCREEN_HEIGHT - DINOSAUR_HEIGHT;
+    int c_pos = 0;
+
+    draw_img(r_pos, c_pos, DINOSAUR_HEIGHT, DINOSAUR_WIDTH, dinosaur);
     while(1);
 }
 

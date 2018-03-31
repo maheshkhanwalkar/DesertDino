@@ -1,11 +1,13 @@
 /* drivers/video/prim.c: drawing primitives */
 
-#define MODE3 3
-#define BG2_ENABLE  (1<<10)
+#include "video.h"
+#include "../../myLib.h"
 
 /* Display and control mem-mapped I/O */
 static volatile unsigned short* video_buffer = (volatile unsigned short*)0x6000000;
 static volatile unsigned short* mode_ctrl = (volatile unsigned short *) 0x4000000;
+
+static volatile unsigned short* scanline_ctr = (volatile unsigned short *)0x4000006;
 
 /* Screen dimensions */
 static const int NUM_ROWS = 160;
@@ -31,5 +33,29 @@ void draw_pixel(int row, int col, int color)
 
     /* Draw pixel */
     video_buffer[index(row, col)] = (unsigned short)color;
+}
+
+/* TODO: use DMA to improve performance */
+void draw_img(int row, int col, int rdim, int cdim, const unsigned short* img_data)
+{
+    int spot = 0;
+
+    for(int i = 0; i < rdim; i++)
+    {
+        for(int j = 0; j < cdim; j++)
+        {
+            draw_pixel(row + i, col + j, img_data[spot]);
+            spot++;
+        }
+    }
+}
+
+void waitForVBlank(void)
+{
+    while(*scanline_ctr > 160)
+        ;
+
+    while(*scanline_ctr < 160)
+        ;
 }
 
