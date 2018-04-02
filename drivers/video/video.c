@@ -14,10 +14,15 @@ static const int NUM_ROWS = 160;
 static const int NUM_COLS = 240;
 
 /* Convert 2D indexing to 1D indexing */
-static inline int index(int row, int col)
+static inline int index(int row, int col, int c_count)
+{
+    return row * c_count + col;
+}
+
+/*static inline int index(int row, int col)
 {
     return row * NUM_COLS + col;
-}
+}*/
 
 void init_mode3(void)
 {
@@ -33,21 +38,20 @@ void draw_pixel(int row, int col, int color)
     }
 
     /* Draw pixel */
-    video_buffer[index(row, col)] = (unsigned short)color;
+    video_buffer[index(row, col, NUM_COLS)] = (unsigned short)color;
 }
 
-/* TODO: use DMA to improve performance */
 void draw_img(int row, int col, int rdim, int cdim, const unsigned short* img_data)
 {
     int spot = 0;
 
-    for(int i = 0; i < rdim; i++)
+    for(int r = 0; r < rdim; r++)
     {
-        for(int j = 0; j < cdim; j++)
-        {
-            draw_pixel(row + i, col + j, img_data[spot]);
-            spot++;
-        }
+        DMA[3].src = &img_data[spot];
+        DMA[3].dst = &video_buffer[index(row + r, col, NUM_COLS)];
+        DMA[3].cnt = cdim | DMA_ON | DMA_NOW;
+
+        spot += cdim;
     }
 }
 
