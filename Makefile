@@ -13,11 +13,14 @@ PROGNAME = DesertDino
 # that will be compiled into your program. For example
 # if you have main.c and myLib.c then in the following
 # line you would put main.o and myLib.o
-OFILES = main/main.o drivers/video/video.o drivers/video/image.o \
-		 assets/img/dinosaur.o assets/img/ground.o \
-		 assets/img/bg_main.o \
-		 assets/img/dinosaur_left.o assets/img/dinosaur_right.o
-
+OFILES = main/main.o \
+		 drivers/video/video.o drivers/video/image.o \
+		 drivers/font/font.o drivers/font/font_raw.o \
+		 assets/img/dino/dinosaur.o assets/img/dino/dinosaur_left.o assets/img/dino/dinosaur_right.o \
+		 assets/img/ground/ground.o \
+		 assets/img/bg/bg_main.o \
+		 lib/libg.o
+		 
 ################################################################################
 # These are various settings used to make the GBA toolchain work
 # DO NOT EDIT BELOW.

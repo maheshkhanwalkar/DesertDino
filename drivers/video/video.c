@@ -2,6 +2,7 @@
 
 #include "video.h"
 #include "../../myLib.h"
+#include "../../lib/libg.h"
 
 /* Display and control mem-mapped I/O */
 static volatile unsigned short* video_buffer = (volatile unsigned short*)0x6000000;
@@ -14,10 +15,10 @@ static const int NUM_ROWS = 160;
 static const int NUM_COLS = 240;
 
 /* Convert 2D indexing to 1D indexing */
-static inline int index(int row, int col, int c_count)
+/*static inline int index(int row, int col, int c_count)
 {
     return row * c_count + col;
-}
+}*/
 
 /*static inline int index(int row, int col)
 {
@@ -38,7 +39,7 @@ void draw_pixel(int row, int col, int color)
     }
 
     /* Draw pixel */
-    video_buffer[index(row, col, NUM_COLS)] = (unsigned short)color;
+    video_buffer[idx(row, col, NUM_COLS)] = (unsigned short)color;
 }
 
 void draw_img(int row, int col, int rdim, int cdim, const unsigned short* img_data)
@@ -48,7 +49,7 @@ void draw_img(int row, int col, int rdim, int cdim, const unsigned short* img_da
     for(int r = 0; r < rdim; r++)
     {
         DMA[3].src = &img_data[spot];
-        DMA[3].dst = &video_buffer[index(row + r, col, NUM_COLS)];
+        DMA[3].dst = &video_buffer[idx(row + r, col, NUM_COLS)];
         DMA[3].cnt = cdim | DMA_ON | DMA_NOW;
 
         spot += cdim;

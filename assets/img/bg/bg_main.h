@@ -1,11 +1,11 @@
 /*
  * Exported with nin10kit v1.7
- * Invocation command was nin10kit --mode=3 bg_main bg_main.bmp 
- * Time-stamp: Tuesday 04/03/2018, 07:41:51
+ * Invocation command was nin10kit --mode=3 bg/bg_main bg/bg_main.bmp 
+ * Time-stamp: Tuesday 04/03/2018, 10:11:02
  * 
  * Image Information
  * -----------------
- * bg_main.bmp 240@160
+ * bg/bg_main.bmp 240@160
  * 
  * All bug reports / feature requests are to be filed here https://github.com/TricksterGuy/nin10kit/issues
  */

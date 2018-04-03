@@ -1,5 +1,6 @@
 #include "image.h"
 #include "video.h"
+#include "../../lib/libg.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -15,12 +16,6 @@ struct image
 
     unsigned short* data;
 };
-
-/* Compute address */
-static inline void* addr(const void* base, int e_size, int row, int col, int c_count)
-{
-    return (char*)base + e_size * (row * c_count + col);
-}
 
 image_t img_Create(int row, int col, int height, int width, const unsigned short* data)
 {
@@ -52,8 +47,8 @@ void img_Clear(image_t img, image_t bg)
     /* Extract the required pixels */
     for(int i = 0; i < img->height; i++) 
     {
-        const void* src = addr(bg->data, sizeof(unsigned short), o_row, img->col, bg->width);
-        void* dest = addr(bg_fill, sizeof(unsigned short), i, 0, img->width);
+        const void* src = idx_ptr(bg->data, sizeof(unsigned short), o_row, img->col, bg->width);
+        void* dest = idx_ptr(bg_fill, sizeof(unsigned short), i, 0, img->width);
 
         memcpy(dest, src, sizeof(unsigned short) * img->width);
         o_row++;
@@ -86,15 +81,15 @@ void img_Ticker(image_t img, int amt)
         int s1_pos = amt > 0 ? 0 : blocks;
         int d1_pos = amt > 0 ? blocks : 0;
 
-        void* src = addr(img->data, sizeof(unsigned short), i, s1_pos, img->width);
-        void* dest = addr(copy, sizeof(unsigned short), i, d1_pos, img->width);
+        void* src = idx_ptr(img->data, sizeof(unsigned short), i, s1_pos, img->width);
+        void* dest = idx_ptr(copy, sizeof(unsigned short), i, d1_pos, img->width);
         memcpy(dest, src, (img->width - blocks) * sizeof(unsigned short));
 
         int s2_pos = amt > 0 ? img->width - blocks : 0;
         int d2_pos = amt > 0 ? 0 : img->width - blocks;
 
-        src = addr(img->data, sizeof(unsigned short), i, s2_pos, img->width);
-        dest = addr(copy, sizeof(unsigned short), i, d2_pos, img->width);
+        src = idx_ptr(img->data, sizeof(unsigned short), i, s2_pos, img->width);
+        dest = idx_ptr(copy, sizeof(unsigned short), i, d2_pos, img->width);
 
         memcpy(dest, src, blocks * sizeof(unsigned short));
     }
