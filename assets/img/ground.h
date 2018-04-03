@@ -1,7 +1,7 @@
 /*
  * Exported with nin10kit v1.7
  * Invocation command was nin10kit --mode=3 ground ground.bmp 
- * Time-stamp: Saturday 03/31/2018, 19:04:17
+ * Time-stamp: Tuesday 04/03/2018, 07:41:51
  * 
  * Image Information
  * -----------------

@@ -7,7 +7,7 @@
 # The name of your desired GBA game
 # This should be a just a name i.e MyFirstGBAGame
 # No SPACES AFTER THE NAME.
-PROGNAME = MyGame
+PROGNAME = DesertDino
 
 # Here you must put a list of all of the object files
 # that will be compiled into your program. For example
@@ -15,7 +15,8 @@ PROGNAME = MyGame
 # line you would put main.o and myLib.o
 OFILES = main/main.o drivers/video/video.o drivers/video/image.o \
 		 assets/img/dinosaur.o assets/img/ground.o \
-		 assets/img/bg_main.o
+		 assets/img/bg_main.o \
+		 assets/img/dinosaur_left.o assets/img/dinosaur_right.o
 
 ################################################################################
 # These are various settings used to make the GBA toolchain work
