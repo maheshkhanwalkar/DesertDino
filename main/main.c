@@ -132,7 +132,7 @@ void in_game(image_t imgs[4], enum State* current, bool* restart)
 {
     /* Air time */
     static bool in_air = false;
-    //static int ticks = 0;
+    static int ticks = 0;
 
     /* Get images */
     image_t dino = imgs[0];
@@ -159,10 +159,21 @@ void in_game(image_t imgs[4], enum State* current, bool* restart)
 
     if(in_air)
     {
-        //img_Clear(dino, bg);
-        //in_air = false;
-        img_RelMove(dino_none, bg, -5, 0);
-        //img_RelMove(dino, bg, 5, 0);
+        if(ticks < 5) 
+        {
+            img_RelMove(dino_none, bg, -10, 0);
+            ticks++;
+        }
+        else if(ticks < 10)
+        {
+            img_RelMove(dino_none, bg, 10, 0);
+            ticks++;
+        }
+        else
+        {
+            ticks = 0;
+            in_air = false;
+        }
     }
     else
     {
