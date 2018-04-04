@@ -12,6 +12,9 @@ void img_Draw(image_t img);
 /* Clear img from the screen (background fill) */
 void img_Clear(image_t img, image_t bg);
 
+/* Move img by (r_amt, c_amt) */
+void img_RelMove(image_t img, image_t bg, int r_amt, int c_amt);
+
 /* Move image ticker by 'amt' (wrap around) and stores the new image in 'img' */
 void img_Ticker(image_t img, int amt);
 

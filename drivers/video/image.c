@@ -63,6 +63,18 @@ void img_Clear(image_t img, image_t bg)
     img_Destroy(clr);
 }
 
+void img_RelMove(image_t img, image_t bg, int r_amt, int c_amt)
+{
+    //waitForVBlank();
+    img_Clear(img, bg);
+    
+    img->row += r_amt;
+    img->col += c_amt;
+
+    //waitForVBlank();
+    img_Draw(img);
+}
+
 void img_Ticker(image_t img, int amt)
 {
     /* no-op */

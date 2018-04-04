@@ -7,6 +7,7 @@
 #include "../assets/img/dino/dinosaur.h"
 #include "../assets/img/dino/dinosaur_left.h"
 #include "../assets/img/dino/dinosaur_right.h"
+#include "../assets/img/dino/dinosaur_none.h"
 
 #include "../assets/img/bg/bg_main.h"
 #include "../assets/img/bg/bg_dark.h"
@@ -29,10 +30,7 @@ enum State
 void delay(int n);
 
 void title_screen(enum State* current);
-void in_game(image_t* bg[3], enum State* current, bool* rs);
-
-void do_rs(enum State* state, bool* c1, bool* c2);
-
+void in_game(image_t bg[4], enum State* current, bool* rs);
 
 int main(void)
 {
@@ -45,9 +43,11 @@ int main(void)
     image_t dino = img_Create(SCREEN_HEIGHT - DINOSAUR_HEIGHT - 1, 10, DINOSAUR_HEIGHT, DINOSAUR_WIDTH, dinosaur);
     image_t dino_left = img_Create(SCREEN_HEIGHT - DINOSAUR_LEFT_HEIGHT - 1, 10, DINOSAUR_LEFT_HEIGHT, DINOSAUR_LEFT_WIDTH, dinosaur_left);
     image_t dino_right = img_Create(SCREEN_HEIGHT - DINOSAUR_RIGHT_HEIGHT - 1, 10, DINOSAUR_RIGHT_HEIGHT, DINOSAUR_RIGHT_WIDTH, dinosaur_right);
+    image_t dino_none = img_Create(SCREEN_HEIGHT - DINOSAUR_NONE_HEIGHT - 1, 10, DINOSAUR_NONE_HEIGHT, DINOSAUR_NONE_WIDTH, dinosaur_none);
+    
 
     image_t grd = img_Create(SCREEN_HEIGHT - GROUND_HEIGHT, 0, GROUND_HEIGHT, GROUND_WIDTH, ground);
-    image_t* imgs[3] = { &dino, &dino, &grd };
+    image_t imgs[4] = { dino, dino_none, grd, bg_ms };
 
     int which = 0;
     enum State current = START;
@@ -83,23 +83,25 @@ int main(void)
                 }
 
                 if(which == -1) {
-                    imgs[1] = &dino;
+                    imgs[0] = dino;
                     which++;
                 } else if(which == 0) {
-                    imgs[1] = &dino_left;
+                    imgs[0] = dino_left;
                     which++;
                 } else if(which == 1) {
-                    imgs[1] = &dino;
+                    imgs[0] = dino;
                     which++;
                 } else {
-                    imgs[1] = &dino_right;
+                    imgs[0] = dino_right;
                     which = -1;
                 }
   
                 in_game(imgs, &current, &restart);
 
                 if(restart){
-                    do_rs(&current, &s_once, &g_once);
+                    current = false;
+                    s_once = false;
+                    g_once = false;
                     restart = false;
                 }
 
@@ -126,11 +128,18 @@ void title_screen(enum State* current)
 }
 
 /* Render in-game content */
-void in_game(image_t* imgs[3], enum State* current, bool* restart)
+void in_game(image_t imgs[4], enum State* current, bool* restart)
 {
+    /* Air time */
+    static bool in_air = false;
+    //static int ticks = 0;
+
     /* Get images */
-    image_t* dino = imgs[0];
-    image_t* grd = imgs[2];
+    image_t dino = imgs[0];
+    image_t dino_none = imgs[1];
+    image_t grd = imgs[2];
+    image_t bg = imgs[3];
+
 
     if(KEY_DOWN_NOW(BUTTON_SELECT))
     {
@@ -140,20 +149,29 @@ void in_game(image_t* imgs[3], enum State* current, bool* restart)
         return;
     }
 
-    img_Ticker(*grd, -5);
-    img_Draw(*dino);
+    if(KEY_DOWN_NOW(BUTTON_UP))
+    {
+        if(!in_air)
+            in_air = true;
+    }
+
+    img_Ticker(grd, -5);
+
+    if(in_air)
+    {
+        //img_Clear(dino, bg);
+        //in_air = false;
+        img_RelMove(dino_none, bg, -5, 0);
+        //img_RelMove(dino, bg, 5, 0);
+    }
+    else
+    {
+        img_Draw(dino);
+    }
 
     delay(20);
 
     *current = IN_GAME;
-}
-
-/* Reset variables (on restart) */
-void do_rs(enum State* state, bool* c1, bool* c2)
-{
-    *state = START;
-    *c1 = false;
-    *c2 = false;
 }
 
 void delay(int n)
