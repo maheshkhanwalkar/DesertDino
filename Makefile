@@ -20,7 +20,7 @@ OFILES = main/main.o \
 		 assets/img/dino/dinosaur_right.o assets/img/dino/dinosaur_none.o \
 		 assets/img/ground/ground.o \
 		 assets/img/bg/bg_main.o assets/img/bg/bg_dark.o\
-		 lib/libg.o
+		 lib/libg.o lib/frame.o
 		 
 ################################################################################
 # These are various settings used to make the GBA toolchain work

@@ -11,12 +11,13 @@
 
 #include "../assets/img/bg/bg_main.h"
 #include "../assets/img/bg/bg_dark.h"
-
 #include "../assets/img/ground/ground.h"
 
 #include "../myLib.h"
+#include "../lib/frame.h"
 
 #include <stdbool.h>
+#include <stddef.h>
 
 /* Game states */
 enum State
@@ -26,120 +27,188 @@ enum State
     GAME_OVER,
 };
 
-/* Function prototypes */
-void delay(int n);
-
-void title_screen(enum State* current);
-void in_game(image_t bg[4], enum State* current, bool* rs);
+/* Game state handling functions */
+bool title_screen(frame_t active, enum State* current);
+bool in_game(frame_t active, int ticks, enum State* current);
 
 int main(void)
 {
     init_mode3();
 
-    /* Create image objects */
-    image_t bg_title = img_Create(0, 0, BG_DARK_HEIGHT, BG_DARK_WIDTH, bg_dark);
-    image_t bg_ms = img_Create(0, 0, BG_MAIN_HEIGHT, BG_MAIN_WIDTH, bg_main);
-
-    image_t dino = img_Create(SCREEN_HEIGHT - DINOSAUR_HEIGHT - 1, 10, DINOSAUR_HEIGHT, DINOSAUR_WIDTH, dinosaur);
-    image_t dino_left = img_Create(SCREEN_HEIGHT - DINOSAUR_LEFT_HEIGHT - 1, 10, DINOSAUR_LEFT_HEIGHT, DINOSAUR_LEFT_WIDTH, dinosaur_left);
-    image_t dino_right = img_Create(SCREEN_HEIGHT - DINOSAUR_RIGHT_HEIGHT - 1, 10, DINOSAUR_RIGHT_HEIGHT, DINOSAUR_RIGHT_WIDTH, dinosaur_right);
-    image_t dino_none = img_Create(SCREEN_HEIGHT - DINOSAUR_NONE_HEIGHT - 1, 10, DINOSAUR_NONE_HEIGHT, DINOSAUR_NONE_WIDTH, dinosaur_none);
-    
-
-    image_t grd = img_Create(SCREEN_HEIGHT - GROUND_HEIGHT, 0, GROUND_HEIGHT, GROUND_WIDTH, ground);
-    image_t imgs[4] = { dino, dino_none, grd, bg_ms };
-
-    int which = 0;
+    /* Starting state */
     enum State current = START;
+    frame_t active = frame_Create();
 
-    bool s_once = false;
-    bool g_once = false;
-    bool restart = false;
+    int ticks = 0;
 
     while(1) 
     {
-        /* Draw the images */
         waitForVBlank();
+        ticks++;
 
-        /* Perform action */
+        /* Reset */
+        if(ticks == 60) {
+            ticks = 0;
+        }
+
+        /* Potential updates */
+        bool res = false;
+
         switch(current)
         {
             case START:
-                if(!s_once) {
-                    img_Draw(bg_title);
-
-                    draw_str(5, 80, "Desert Dino", YELLOW);
-                    draw_str(25, 50, "Press 'Start' to Begin", YELLOW);
- 
-                    s_once = true;
-                }
-
-                title_screen(&current);
+                res = title_screen(active, &current);
                 break;
+
             case IN_GAME:
-                if(!g_once) {
-                    img_Draw(bg_ms);
-                    g_once = true;
-                }
-
-                if(which == -1) {
-                    imgs[0] = dino;
-                    which++;
-                } else if(which == 0) {
-                    imgs[0] = dino_left;
-                    which++;
-                } else if(which == 1) {
-                    imgs[0] = dino;
-                    which++;
-                } else {
-                    imgs[0] = dino_right;
-                    which = -1;
-                }
-  
-                in_game(imgs, &current, &restart);
-
-                if(restart){
-                    current = false;
-                    s_once = false;
-                    g_once = false;
-                    restart = false;
-                }
-
+                res = in_game(active, ticks, &current);
                 break;
+
             case GAME_OVER:
                 break;
+
             default:
                 break;
         }
-    }
+
+        /* Force reset */
+        if(res) {
+            ticks = 0;
+        }
+
 }
 
 /* Display title screen */
-void title_screen(enum State* current)
+bool title_screen(frame_t active, enum State* state)
 {
-    /* Start pressed */
-    if(KEY_DOWN_NOW(BUTTON_START))
-    {
-        *current = IN_GAME;
-        return;
+    /* Title image */
+    static image_t img = NULL;
+   
+    /* Initialization */
+    if(img == NULL) {
+        img = img_Create(0, 0, BG_DARK_HEIGHT, BG_DARK_WIDTH, bg_dark);
     }
 
-    *current = START;
+    /* Start game */
+    if(KEY_DOWN_NOW(BUTTON_START))
+    {
+        *state = IN_GAME;
+        return false;
+    }
+
+    /* No updates */
+    if(frame_Equals(active, &img, 1))
+        return false;
+
+    frame_Clear(active);
+    frame_Add(active, img, true);
+
+    frame_Draw(active, true);
+
+    draw_str(5, 80, "Desert Dino", YELLOW);
+    draw_str(25, 50, "Press 'Start' to Begin", YELLOW);
+
+    return true;
+}
+
+bool in_game(frame_t active, int ticks, enum State* current)
+{
+    // In-game states 
+    enum InGameStates {
+        D_NORM1,
+        D_NORM2,
+        D_LEFT,
+        D_RIGHT,
+    };
+
+    static enum InGameStates state = D_NORM1;
+
+    static image_t bg_ms = NULL, dino = NULL, dino_left = NULL,
+        dino_right = NULL, dino_none = NULL, grd = NULL;
+
+    /* Initialization */
+    if(bg_ms == NULL) {
+        bg_ms = img_Create(0, 0, BG_MAIN_HEIGHT, BG_MAIN_WIDTH, bg_main);
+        dino = img_Create(SCREEN_HEIGHT - DINOSAUR_HEIGHT - 1, 10, DINOSAUR_HEIGHT, DINOSAUR_WIDTH, dinosaur);
+        dino_left = img_Create(SCREEN_HEIGHT - DINOSAUR_LEFT_HEIGHT - 1, 10, DINOSAUR_LEFT_HEIGHT, DINOSAUR_LEFT_WIDTH, dinosaur_left);
+        dino_right = img_Create(SCREEN_HEIGHT - DINOSAUR_RIGHT_HEIGHT - 1, 10, DINOSAUR_RIGHT_HEIGHT, DINOSAUR_RIGHT_WIDTH, dinosaur_right);
+        dino_none = img_Create(SCREEN_HEIGHT - DINOSAUR_NONE_HEIGHT - 1, 10, DINOSAUR_NONE_HEIGHT, DINOSAUR_NONE_WIDTH, dinosaur_none);
+        grd = img_Create(SCREEN_HEIGHT - GROUND_HEIGHT, 0, GROUND_HEIGHT, GROUND_WIDTH, ground);
+    }
+
+    (void)dino_none;
+
+    /* Go back to start screen */
+    if(KEY_DOWN_NOW(BUTTON_SELECT))
+    {
+        *current = START;
+        return false;
+    }
+
+    if(!frame_Contains(active, bg_ms))
+    {
+        frame_Clear(active);
+
+        frame_Add(active, bg_ms, true);
+        frame_Draw(active, true);
+    }
+
+    if(ticks == 30) {
+        img_Ticker(grd, -5);
+        
+        switch(state) 
+        {
+            case D_NORM1:
+                frame_Add(active, dino, false);
+                frame_Draw(active, false); 
+                frame_Remove(active, dino);
+                state = D_LEFT;
+
+                break;
+
+            case D_LEFT:
+                frame_Add(active, dino_left, false);
+                frame_Draw(active, false);
+                frame_Remove(active, dino_left);
+                state = D_NORM2;
+
+                break;
+
+            case D_NORM2:
+                frame_Add(active, dino, false);
+                frame_Draw(active, false);
+                frame_Remove(active, dino);
+                state = D_RIGHT;
+
+                break;
+
+            case D_RIGHT:
+                frame_Add(active, dino_right, false);
+                frame_Draw(active, false);
+                frame_Remove(active, dino_right);
+                state = D_NORM1;
+
+                break;
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 /* Render in-game content */
-void in_game(image_t imgs[4], enum State* current, bool* restart)
+/*void in_game(image_t imgs[4], enum State* current, bool* restart)
 {
-    /* Air time */
     static bool in_air = false;
     static int ticks = 0;
 
-    /* Get images */
     image_t dino = imgs[0];
     image_t dino_none = imgs[1];
     image_t grd = imgs[2];
     image_t bg = imgs[3];
 
+    //frame_t active = frame_Create(NULL, 0); 
 
     if(KEY_DOWN_NOW(BUTTON_SELECT))
     {
@@ -159,7 +228,7 @@ void in_game(image_t imgs[4], enum State* current, bool* restart)
 
     if(in_air)
     {
-        if(ticks < 5) 
+        if(ticks < 30) 
         {
             img_RelMove(dino_none, bg, -10, 0);
             ticks++;
@@ -180,16 +249,7 @@ void in_game(image_t imgs[4], enum State* current, bool* restart)
         img_Draw(dino);
     }
 
-    delay(20);
-
     *current = IN_GAME;
-}
-
-void delay(int n)
-{
-    volatile int x = 0;
-
-    for(int i = 0; i < n * 8000; i++)
-        x++;
+    delay(20);
 }
 
