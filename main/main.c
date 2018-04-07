@@ -243,6 +243,8 @@ bool in_game(frame_t active, int ticks, enum State* current)
         draw_str(18, 150, "HI:", YELLOW);
         draw_str(18, 210, text, YELLOW);
 
+        free(text);
+
         score++;
 
         img_Ticker(grd, -5);
