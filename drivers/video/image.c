@@ -74,9 +74,29 @@ int img_GetCol(image_t img)
     return img->col;
 }
 
+int img_GetRow(image_t img)
+{
+    return img->row;
+}
+
+int img_GetHeight(image_t img)
+{
+    return img->height;
+}
+
+int img_GetWidth(image_t img)
+{
+    return img->width;
+}
+
 void img_SetCol(image_t img, int col)
 {
     img->col = col;
+}
+
+void img_SetRow(image_t img, int row)
+{
+    img->row = row;
 }
 
 void img_Ticker(image_t img, int amt)
