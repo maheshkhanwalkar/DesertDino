@@ -10,3 +10,6 @@ int idx(int row, int col, int c_max);
  */
 void* idx_ptr(void* base, int e_size, int row, int col, int c_max);
 
+/* Integer to ASCII conversion (doesn't handle negatives) */
+char* itoa(int num);
+

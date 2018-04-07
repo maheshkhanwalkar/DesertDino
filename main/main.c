@@ -17,9 +17,11 @@
 
 #include "../myLib.h"
 #include "../lib/frame.h"
+#include "../lib/libg.h"
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 /* Game states */
 enum State
@@ -146,6 +148,9 @@ bool in_game(frame_t active, int ticks, enum State* current)
     const int air_amt = 25;
     const int cacti_amt = -16;
 
+    static int score;
+    static int hi_score = 0;
+
     /* Initialization */
     if(bg_ms == NULL || reset) {
         bg_ms = img_Create(0, 0, BG_MAIN_HEIGHT, BG_MAIN_WIDTH, bg_main);
@@ -155,8 +160,9 @@ bool in_game(frame_t active, int ticks, enum State* current)
         dino_none = img_Create(SCREEN_HEIGHT - DINOSAUR_NONE_HEIGHT - 1, 10, DINOSAUR_NONE_HEIGHT, DINOSAUR_NONE_WIDTH, dinosaur_none);
         grd = img_Create(SCREEN_HEIGHT - GROUND_HEIGHT, 0, GROUND_HEIGHT, GROUND_WIDTH, ground);
         cacti = img_Create(SCREEN_HEIGHT - CACTUS_HEIGHT - 5, 200, CACTUS_HEIGHT, CACTUS_WIDTH, cactus);
-
+        score = 0;
         reset = false;
+        state = D_NORM1;
     }
 
     /* Go back to start screen */
@@ -220,8 +226,27 @@ bool in_game(frame_t active, int ticks, enum State* current)
             return false;
         }
 
+        /* Update high score */
+        if(score > hi_score) {
+            hi_score = score;
+        }
+
+        char* text = itoa(score);
+
+        draw_str(10, 150, "SCORE:", YELLOW);
+        draw_str(10, 210, text, YELLOW);
+
+        free(text);
+
+        text = itoa(hi_score);
+
+        draw_str(18, 150, "HI:", YELLOW);
+        draw_str(18, 210, text, YELLOW);
+
+        score++;
+
         img_Ticker(grd, -5);
-      
+
         img_Clear(cacti, bg_ms);
         img_RelMove(cacti, 0, cacti_amt);
 
