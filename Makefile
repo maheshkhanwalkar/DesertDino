@@ -18,7 +18,7 @@ OFILES = main/main.o \
 		 drivers/font/font.o drivers/font/font_raw.o \
 		 assets/img/dino/dinosaur.o assets/img/dino/dinosaur_left.o \
 		 assets/img/dino/dinosaur_right.o assets/img/dino/dinosaur_none.o \
-		 assets/img/ground/ground.o \
+		 assets/img/ground/ground.o assets/img/cactus/cactus.o \
 		 assets/img/bg/bg_main.o assets/img/bg/bg_dark.o\
 		 lib/libg.o lib/frame.o
 		 

@@ -13,7 +13,13 @@ void img_Draw(image_t img);
 void img_Clear(image_t img, image_t bg);
 
 /* Move img by (r_amt, c_amt) */
-void img_RelMove(image_t img, image_t bg, int r_amt, int c_amt);
+void img_RelMove(image_t img, int r_amt, int c_amt);
+
+/* Get column position */
+int img_GetCol(image_t img);
+
+/* Set column position to col */
+void img_SetCol(image_t img, int col);
 
 /* Move image ticker by 'amt' (wrap around) and stores the new image in 'img' */
 void img_Ticker(image_t img, int amt);

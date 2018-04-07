@@ -13,6 +13,8 @@
 #include "../assets/img/bg/bg_dark.h"
 #include "../assets/img/ground/ground.h"
 
+#include "../assets/img/cactus/cactus.h"
+
 #include "../myLib.h"
 #include "../lib/frame.h"
 
@@ -47,7 +49,7 @@ int main(void)
         ticks++;
 
         /* Reset */
-        if(ticks == 60) {
+        if(ticks == 120) {
             ticks = 0;
         }
 
@@ -75,6 +77,7 @@ int main(void)
         if(res) {
             ticks = 0;
         }
+    }
 
 }
 
@@ -119,12 +122,21 @@ bool in_game(frame_t active, int ticks, enum State* current)
         D_NORM2,
         D_LEFT,
         D_RIGHT,
+        IN_AIR1,
+        IN_AIR2,
+        IN_AIR3,
+        IN_AIR4,
+        IN_AIR5,
+        D_NORM0
     };
 
     static enum InGameStates state = D_NORM1;
 
     static image_t bg_ms = NULL, dino = NULL, dino_left = NULL,
-        dino_right = NULL, dino_none = NULL, grd = NULL;
+        dino_right = NULL, dino_none = NULL, grd = NULL, cacti = NULL;
+
+    const int air_amt = 35;
+    const int cacti_amt = -30;
 
     /* Initialization */
     if(bg_ms == NULL) {
@@ -134,9 +146,8 @@ bool in_game(frame_t active, int ticks, enum State* current)
         dino_right = img_Create(SCREEN_HEIGHT - DINOSAUR_RIGHT_HEIGHT - 1, 10, DINOSAUR_RIGHT_HEIGHT, DINOSAUR_RIGHT_WIDTH, dinosaur_right);
         dino_none = img_Create(SCREEN_HEIGHT - DINOSAUR_NONE_HEIGHT - 1, 10, DINOSAUR_NONE_HEIGHT, DINOSAUR_NONE_WIDTH, dinosaur_none);
         grd = img_Create(SCREEN_HEIGHT - GROUND_HEIGHT, 0, GROUND_HEIGHT, GROUND_WIDTH, ground);
+        cacti = img_Create(SCREEN_HEIGHT - CACTUS_HEIGHT - 5, 200, CACTUS_HEIGHT, CACTUS_WIDTH, cactus);
     }
-
-    (void)dino_none;
 
     /* Go back to start screen */
     if(KEY_DOWN_NOW(BUTTON_SELECT))
@@ -153,15 +164,30 @@ bool in_game(frame_t active, int ticks, enum State* current)
         frame_Draw(active, true);
     }
 
-    if(ticks == 30) {
+    /* Set jump phase */
+    if(KEY_DOWN_NOW(BUTTON_UP) && state < IN_AIR1) {
+        state = IN_AIR1;    
+    }
+
+    if(ticks == 100) {
         img_Ticker(grd, -5);
-        
+      
+        img_Clear(cacti, bg_ms);
+        img_RelMove(cacti, 0, cacti_amt);
+
+        if(img_GetCol(cacti) < 0) {
+            img_SetCol(cacti, 240);
+        }
+
+        img_Draw(cacti);
+
         switch(state) 
         {
             case D_NORM1:
                 frame_Add(active, dino, false);
-                frame_Draw(active, false); 
+                frame_Draw(active, false);
                 frame_Remove(active, dino);
+
                 state = D_LEFT;
 
                 break;
@@ -170,6 +196,7 @@ bool in_game(frame_t active, int ticks, enum State* current)
                 frame_Add(active, dino_left, false);
                 frame_Draw(active, false);
                 frame_Remove(active, dino_left);
+
                 state = D_NORM2;
 
                 break;
@@ -189,67 +216,83 @@ bool in_game(frame_t active, int ticks, enum State* current)
                 state = D_NORM1;
 
                 break;
+
+            case IN_AIR1:
+                img_Clear(dino, bg_ms);
+                img_RelMove(dino_none, -air_amt, 0);
+
+                frame_Add(active, dino_none, false);
+                frame_Draw(active, false);
+
+                frame_Remove(active, dino_none);
+                state = IN_AIR2;
+
+                break;
+
+            case IN_AIR2:
+                img_Clear(dino_none, bg_ms);
+                img_RelMove(dino_none, -air_amt, 0);
+
+                frame_Add(active, dino_none, false);
+                frame_Draw(active, false);
+
+                frame_Remove(active, dino_none);
+                state = IN_AIR3;
+
+                break;
+
+            case IN_AIR3:
+                img_Clear(dino_none, bg_ms);
+                img_RelMove(dino_none, -air_amt, 0);
+
+                frame_Add(active, dino_none, false);
+                frame_Draw(active, false);
+
+                frame_Remove(active, dino_none);
+                state = IN_AIR4;
+
+                break;
+
+            case IN_AIR4:
+                img_Clear(dino_none, bg_ms);
+                img_RelMove(dino_none, air_amt, 0);
+
+                frame_Add(active, dino_none, false);
+                frame_Draw(active, false);
+
+                frame_Remove(active, dino_none);
+                state = IN_AIR5;
+
+                break;
+
+            case IN_AIR5:
+                img_Clear(dino_none, bg_ms);
+                img_RelMove(dino_none, air_amt, 0);
+
+                frame_Add(active, dino_none, false);
+                frame_Draw(active, false);
+
+                frame_Remove(active, dino_none);
+                state = D_NORM0;
+
+                break;
+
+            case D_NORM0:
+                img_Clear(dino_none, bg_ms);
+                img_RelMove(dino_none, air_amt, 0);
+
+                frame_Add(active, dino, false);
+                frame_Draw(active, false);
+
+                frame_Remove(active, dino);
+                state = D_NORM2;
+                
+                break;
         }
 
         return true;
     }
 
     return false;
-}
-
-/* Render in-game content */
-/*void in_game(image_t imgs[4], enum State* current, bool* restart)
-{
-    static bool in_air = false;
-    static int ticks = 0;
-
-    image_t dino = imgs[0];
-    image_t dino_none = imgs[1];
-    image_t grd = imgs[2];
-    image_t bg = imgs[3];
-
-    //frame_t active = frame_Create(NULL, 0); 
-
-    if(KEY_DOWN_NOW(BUTTON_SELECT))
-    {
-        *restart = true;
-        *current = START;
-
-        return;
-    }
-
-    if(KEY_DOWN_NOW(BUTTON_UP))
-    {
-        if(!in_air)
-            in_air = true;
-    }
-
-    img_Ticker(grd, -5);
-
-    if(in_air)
-    {
-        if(ticks < 30) 
-        {
-            img_RelMove(dino_none, bg, -10, 0);
-            ticks++;
-        }
-        else if(ticks < 10)
-        {
-            img_RelMove(dino_none, bg, 10, 0);
-            ticks++;
-        }
-        else
-        {
-            ticks = 0;
-            in_air = false;
-        }
-    }
-    else
-    {
-        img_Draw(dino);
-    }
-
-    *current = IN_GAME;
-    delay(20);
 }
 

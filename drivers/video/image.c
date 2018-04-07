@@ -63,16 +63,20 @@ void img_Clear(image_t img, image_t bg)
     img_Destroy(clr);
 }
 
-void img_RelMove(image_t img, image_t bg, int r_amt, int c_amt)
+void img_RelMove(image_t img, int r_amt, int c_amt)
 {
-    //waitForVBlank();
-    img_Clear(img, bg);
-    
     img->row += r_amt;
     img->col += c_amt;
+}
 
-    //waitForVBlank();
-    img_Draw(img);
+int img_GetCol(image_t img)
+{
+    return img->col;
+}
+
+void img_SetCol(image_t img, int col)
+{
+    img->col = col;
 }
 
 void img_Ticker(image_t img, int amt)

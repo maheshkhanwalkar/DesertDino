@@ -1,7 +1,7 @@
 /*
  * Exported with nin10kit v1.7
  * Invocation command was nin10kit --mode=3 dino/dinosaur_left dino/dinosaur_left.bmp 
- * Time-stamp: Tuesday 04/03/2018, 21:03:09
+ * Time-stamp: Friday 04/06/2018, 19:07:15
  * 
  * Image Information
  * -----------------
