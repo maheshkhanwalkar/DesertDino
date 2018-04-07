@@ -381,8 +381,8 @@ bool game_over(enum State* current)
         return true;
     }
     
-    draw_str(10, 80, "GAME OVER", YELLOW);
-    draw_str(18, 50, "Press 'Select' to restart", YELLOW);
+    draw_str(30, 80, "GAME OVER", YELLOW);
+    draw_str(38, 50, "Press 'Select' to restart", YELLOW);
 
     return true;
 }
